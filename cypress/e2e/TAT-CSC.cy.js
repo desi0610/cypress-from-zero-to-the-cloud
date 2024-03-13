@@ -109,4 +109,99 @@ describe('TAT Customer Service Center', () => {
   //   .should('deep.equal', ['blog, 'courses'])
   // });
 
+  // part 4 Excercises
+  it('checks the type of service "Feedback"', () => { 
+    //cy.get('[type="radio"]').first().check().should('be.checked').and('have.value', 'help');
+    cy.get('input[type="radio"][value="help"]').check().should('be.checked').and('have.value','help');
+    cy.get('[type="radio"]').check('praise').should('be.checked').and('have.value','praise');
+    cy.get('[type="radio"]').check('feedback').should('be.checked').and('have.value','feedback');
+  });
+
+  /**
+   * Create a test called checks each type of service.
+     Make sure that after .check(), each radio has been checked.
+   */
+  it('checks each type of service', () => {
+    cy.get('[type="radio"]')
+    .should('have.length', 3)
+    .each((typeOfService) => {
+      cy.wrap(typeOfService)
+      .check()
+      .should('be.checked');
+    });
+  });
+
+  //Part 5 Exersice
+  
+  it('checks both checkboxes, then unchecks the last one', () => {
+    cy.get('input[type="checkbox"]')
+    .should('have.length', 2).check().should('be.checked');
+    cy.get('input[type="checkbox"]').last().uncheck()
+    .should('be.not.checked');
+  });
+
+  it('checks both checkboxes, then unchecks the last one', () => {
+    cy.get('input[type="checkbox"]')
+    .should('have.length', 2).check().should('be.checked')
+    .last().uncheck().should('not.be.checked');
+  });
+
+  it('displays an error message when the phone becomes required but is not filled in before the form submission', () => {
+    cy.get('[name="firstName"]').type('Daisy');
+    cy.get('[id="lastName"]').type("Fuentes");
+    cy.get('[type="email"]').type('daisy@gmail.com');
+    cy.get('#open-text-area').type('Test');
+    cy.get('#phone-checkbox').check();
+    cy.contains('button', 'Send').click();
+    cy.get('.error').should('be.visible');
+  });
+
+  // 06.md Ex
+  it('selects a file from the fixtures folder', () => {
+    cy.get('#file-upload')
+    .selectFile('cypress/fixtures/example.json')
+    .should(input => {
+      expect(input[0].files[0].name).to.equal('example.json');
+    });
+  });
+
+  // 06.md Ex 1
+  it('selects a file simulating a drag-and-drop', () => {
+    cy.get('#file-upload')
+    .selectFile('cypress/fixtures/example.json', { subjectType: 'drag-n-drop' })
+    .should(input => {
+      expect(input[0].files[0].name).to.equal('example.json');
+    });
+  });
+// 06.md Ex 2
+  it('selects a file using a fixture to which an alias was given', () => {
+    cy.fixture('example.json').as('sampleFile');
+    cy.get('#file-upload')
+    .selectFile('@sampleFile')
+    .should(input => {
+      expect(input[0].files[0].name).to.equal('example.json');
+    });
+  });
+
+  // 06.md Ex
+  it('verifies that the privacy policy page opens in another tab without the need for a click', () => {
+    cy.contains('a', 'Privacy Policy').should('have.attr', 'href', 'privacy.html')
+    .and('have.attr', 'target', '_blank');
+  });
+
+  // 06.md Ex 1
+  it('access the privacy policy page by removing the target, then clicking on the link', () => {
+    cy.contains('a', 'Privacy Policy').invoke('removeAttr', 'target')
+    .click();
+    cy.contains('h1', 'TAT CSC - Privacy Policy').should('be.visible');
+  });
+// 06.md Ex 1
+
+  it.only('independently test the privacy policy page', () => {
+    cy.contains('a', 'Privacy Policy').invoke('removeAttr', 'target')
+    .click();
+    cy.contains('h1', 'TAT CSC - Privacy Policy').should('be.visible');
+  });
+  
+
 }); 
