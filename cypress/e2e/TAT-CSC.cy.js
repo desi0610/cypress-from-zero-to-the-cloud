@@ -197,7 +197,7 @@ describe('TAT Customer Service Center', () => {
   });
 // 06.md Ex 1
 
-  it.only('independently test the privacy policy page', () => {
+  it('independently test the privacy policy page', () => {
     cy.contains('a', 'Privacy Policy').invoke('removeAttr', 'target')
     .click();
     cy.contains('h1', 'TAT CSC - Privacy Policy').should('be.visible');
