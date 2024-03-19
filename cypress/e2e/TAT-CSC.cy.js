@@ -147,6 +147,7 @@ describe('TAT Customer Service Center', () => {
   });
 
   it('displays an error message when the phone becomes required but is not filled in before the form submission', () => {
+    cy.clock();
     cy.get('[name="firstName"]').type('Daisy');
     cy.get('[id="lastName"]').type("Fuentes");
     cy.get('[type="email"]').type('daisy@gmail.com');
@@ -154,6 +155,8 @@ describe('TAT Customer Service Center', () => {
     cy.get('#phone-checkbox').check();
     cy.contains('button', 'Send').click();
     cy.get('.error').should('be.visible');
+    cy.tick(3000);
+    cy.get('.error').should('not.be.visible');
   });
 
   // 06.md Ex
@@ -201,6 +204,83 @@ describe('TAT Customer Service Center', () => {
     cy.contains('a', 'Privacy Policy').invoke('removeAttr', 'target')
     .click();
     cy.contains('h1', 'TAT CSC - Privacy Policy').should('be.visible');
+  });
+
+  // it.only('displays a message for 3 seconds', () => {
+  //   cy.clock() // freeze the browser clock
+  
+  //   // (...) // action that triggers something that displays a message for three seconds
+  
+  //   // (...) // checking that the message is visible
+  
+  //   cy.tick(3000) // advances the clock by three seconds (in milliseconds). In doing so, we don't need to keep waiting.
+  
+  //   // (...) // checking that the message is no longer visible
+  // });
+  it('fills the form and success message is shown', () => {
+    cy.clock();
+    cy.fillMandatoryFieldsAndSubmit();
+    cy.get('.success').should('be.visible');
+    cy.tick(3000);
+    cy.get('.success').should('not.be.visible');
+  });  
+
+  // Extra exercise 2
+  it('displays and hides the success and error messages using .invoke', () => {
+    cy.get('.success')
+      .should('not.be.visible')
+      .invoke('show')
+      .should('be.visible')
+      .and('contain', 'Message successfully sent.')
+      .invoke('hide')
+      .should('not.be.visible')
+    cy.get('.error')
+      .should('not.be.visible')
+      .invoke('show')
+      .should('be.visible')
+      .and('contain', 'Validate the required fields!')
+      .invoke('hide')
+      .should('not.be.visible')
+  });
+
+  // Extra exercise 3
+  it('fills in the text area field using the invoke command', () => {
+    cy.get('#open-text-area').invoke('val', 'Welcome to this cypress test. I hope those lessons help me improve my cypress skills')
+    .should('be.visible')
+    .and('have.value', 'Welcome to this cypress test. I hope those lessons help me improve my cypress skills');
+  });
+
+  // Extra exercise 3
+  it('makes and HTTP request', () => {
+    cy.request({
+      method: 'GET',
+      url: 'https://tat-csc.s3.sa-east-1.amazonaws.com/index.html'
+    }).then((response) => {
+      expect(response.status).to.equal(200);
+      expect(response.statusText).to.equal('OK');
+      expect(response.body).to.include('TAT CSC');
+    });
+  });
+  it('makes an HTTP request', () => {
+    cy.request('https://tat-csc.s3.sa-east-1.amazonaws.com/index.html') // by default cy.request will send a get method
+      .as('getRequest')
+      .its('status')
+      .should('be.equal', 200);
+    cy.get('@getRequest')
+      .its('statusText')
+      .should('be.equal', 'OK');
+    cy.get('@getRequest')
+      .its('body')
+      .should('include', 'TAT CSC');  
+  });
+
+  // Find the cat exercise 
+  it('find the hidden cat', () => {
+    cy.get('#cat')
+    .invoke('show')
+    .should('be.visible')
+    .invoke('hide')
+    .should('not.be.visible');
   });
   
 
